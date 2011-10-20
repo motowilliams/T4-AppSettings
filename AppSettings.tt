@@ -1,0 +1,123 @@
+<#@ template inherits="Microsoft.VisualStudio.TextTemplating.VSHost.ModelingTextTransformation" language="C#v3.5" debug="true" hostSpecific="true" #>
+<#@ output extension=".cs" #>
+<#@ Assembly Name="System.dll" #>
+<#@ Assembly Name="System.Core.dll" #>
+<#@ assembly name="EnvDTE" #>
+<#@ Assembly Name="System.Windows.Forms.dll" #>
+<#@ Assembly name="System.Configuration"#>
+<#@ import namespace="System" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Diagnostics" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Collections" #>
+<#@import namespace="System.Collections.Specialized"#>
+<#@ import namespace="System.Collections.Generic" #> 
+<#@ import namespace="System.Configuration" #>
+
+using System;
+using System.Configuration;
+public class AppSettings
+    {
+    <#
+		ExeConfigurationFileMap configFile = new ExeConfigurationFileMap();
+        configFile.ExeConfigFilename = GetConfigPath();
+
+        if (string.IsNullOrEmpty(configFile.ExeConfigFilename)){
+            throw new ArgumentNullException("The project does not contain App.config or Web.config file.");
+        }
+        
+        var config = System.Configuration.ConfigurationManager.OpenMappedExeConfiguration(configFile, ConfigurationUserLevel.None);
+        var appSettings = config.AppSettings.Settings;
+		
+		
+           
+	#>
+	
+	<#
+		foreach(var setting in appSettings.AllKeys){
+			
+		#>
+		public static string  <#=setting#>
+        {
+            get
+            {
+                return getConfigSetting("<#=setting#>");
+            }
+        }
+		<#
+		}
+		#>
+	
+        
+        private static string getConfigSetting(string settingName)
+        {
+            if ((ConfigurationManager.AppSettings != null) && (ConfigurationManager.AppSettings.Count != 0))
+            {
+                try
+                {
+                    var _value = ConfigurationManager.AppSettings.Get(settingName);
+                    if (_value == null)
+                    {
+                        throw new ConfigurationException("Invalid configuration setting: " + settingName);
+                    }
+                    return _value;
+                }
+                catch (Exception e)
+                {
+                    throw new ConfigurationException("Invalid configuration setting: " + settingName);
+                }
+            }
+            else
+            {
+                throw new ConfigurationException("Invalid configuration. Required AppSettings section is missing.");
+            }
+        }
+    }
+
+<#+
+	 public EnvDTE.Project GetCurrentProject()  {
+  
+        IServiceProvider _ServiceProvider = (IServiceProvider)Host;
+        if (_ServiceProvider == null)
+            throw new Exception("Host property returned unexpected value (null)");
+		
+        EnvDTE.DTE dte = (EnvDTE.DTE)_ServiceProvider.GetService(typeof(EnvDTE.DTE));
+        if (dte == null)
+            throw new Exception("Unable to retrieve EnvDTE.DTE");
+		
+        Array activeSolutionProjects = (Array)dte.ActiveSolutionProjects;
+        if (activeSolutionProjects == null)
+            throw new Exception("DTE.ActiveSolutionProjects returned null");
+		
+        EnvDTE.Project dteProject = (EnvDTE.Project)activeSolutionProjects.GetValue(0);
+        if (dteProject == null)
+            throw new Exception("DTE.ActiveSolutionProjects[0] returned null");
+		
+        return dteProject;
+
+    }
+	private string GetProjectPath()
+    {
+        EnvDTE.Project project = GetCurrentProject();
+        System.IO.FileInfo info = new System.IO.FileInfo(project.FullName);
+        return info.Directory.FullName;
+	}
+  private string GetConfigPath()
+    {
+        EnvDTE.Project project = GetCurrentProject();
+        foreach (EnvDTE.ProjectItem item in project.ProjectItems)
+        {
+            // if it is the app.config file, then open it up
+            if (item.Name.Equals("App.config",StringComparison.InvariantCultureIgnoreCase) || item.Name.Equals("Web.config",StringComparison.InvariantCultureIgnoreCase))
+				return GetProjectPath() + "\\" + item.Name;
+        }
+        return String.Empty;
+    }
+    
+    public string GetDataDirectory(){
+        EnvDTE.Project project=GetCurrentProject();
+        return System.IO.Path.GetDirectoryName(project.FileName)+"\\App_Data\\";
+    }     
+      
+#>
+
