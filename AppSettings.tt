@@ -1,4 +1,4 @@
-﻿<#@ template language="C#" debug="false" hostspecific="true"#>
+<#@ template language="C#" debug="false" hostspecific="true"#>
 <#@ output extension=".cs" #>
 <#@ Assembly Name="System.Core.dll" #>
 <#@ Assembly Name="EnvDTE" #>
@@ -6,6 +6,7 @@
 <#@ Import Namespace="System" #>
 <#@ Import Namespace="System.IO" #>
 <#@ Import Namespace="System.Configuration" #>
+<#@ Import Namespace="System.Globalization" #>
 <#
 if (string.IsNullOrEmpty(GetConfigPath())) return String.Empty;
 ExeConfigurationFileMap configFile = new ExeConfigurationFileMap();
@@ -33,14 +34,16 @@ namespace <#=namespaceName#>
 	{
 	<#
 
-	foreach(var setting in appSettings.AllKeys){#>
-	public static string <#=CleanPropertyName(setting)#> { get { return GetConfigSettingItem("<#=setting#>"); } }
+	foreach(var setting in appSettings.AllKeys){
+	var val = appSettings[setting].Value;
+	#>
+	public static <#=GetPropertyType(val)#> <#=CleanPropertyName(setting)#> { get { return GetConfigSettingItem<<#=GetPropertyType(val)#>>("<#=setting#>"); } }
 	<#}#>
 
 		private const string MISSING_CONFIG = "Invalid configuration. Required AppSettings section is missing";
 		private const string INVALID_CONFIG_SETTING = "Invalid configuration setting name: {0}";
 
-		private static string GetConfigSettingItem(string name)
+		private static T GetConfigSettingItem<T>(string name)
 		{
 			if (ConfigurationManager.AppSettings == null)
 				throw new ConfigurationErrorsException(MISSING_CONFIG);
@@ -59,7 +62,8 @@ namespace <#=namespaceName#>
 			}
 			if (string.IsNullOrEmpty(value))
 				throw new ConfigurationErrorsException(SettingItemErrorMessage(name));
-			return value;
+			
+			return (T) Convert.ChangeType(value, typeof (T));
 		}
 		
 		private static string SettingItemErrorMessage(string name)
@@ -98,6 +102,85 @@ namespace <#=namespaceName#>
 	private string CleanPropertyName(string name)
 	{
 		return name.Replace(" ", "_");
+	}
+
+	private bool IsNumeric(string propValue, out string numericType)
+	{
+		propValue = propValue.ToLower();
+		bool hasSuffix = false;
+		var possibleSuffixes = new [] { 'd', 'f', 'l', 'm', 'u' };
+
+		foreach (var sfx in possibleSuffixes) 
+		{
+			if (propValue.EndsWith(sfx.ToString()))
+			{
+				hasSuffix = true;
+				break;
+			}
+		}
+
+		var suffix = propValue.Substring(propValue.Length - 1)[0];
+		var number = propValue.Substring(0, propValue.Length - 1);
+
+		if (!hasSuffix)
+			number = propValue;
+
+		double p;
+
+		var parsesToDouble = Double.TryParse(Convert.ToString(number, CultureInfo.InvariantCulture), NumberStyles.Any, System.Globalization.NumberFormatInfo.InvariantInfo, out p);
+		
+		numericType = null;
+
+		if (!parsesToDouble)
+			return false;
+
+		switch (suffix)
+		{
+			case 'd':
+				numericType = "double";
+				break;
+			case 'f':
+				numericType = "float";
+				break;
+			case 'l':
+				numericType = "long";
+				break;
+			case 'm':
+				numericType = "decimal";
+				break;
+			case 'u':
+				numericType = "uint";
+				break;
+			default:
+				numericType = "int";
+				break;
+		}
+
+		return true;
+	}
+
+	private string GetPropertyType(string propValue)
+	{
+		string numericType = "";
+
+		if (IsNumeric(propValue, out numericType))
+			return numericType;
+
+		bool bVal;
+
+		if (bool.TryParse(propValue, out bVal))
+		{
+			return "bool";
+		}
+
+		DateTime dtVal;
+
+		if (DateTime.TryParse(propValue, out dtVal))
+		{
+			return "DateTime";
+		}
+
+		return "string";
 	}
 
 	private string GetProjectPath()
