@@ -10,7 +10,10 @@ namespace <#=namespaceName#>
     {
     <#
 
-    foreach(var setting in appSettings.AllKeys){#>    public static string <#=CleanPropertyName(setting)#> { get { return GetConfigSettingItem("<#=setting#>"); } }<#}#>
+    foreach(var setting in appSettings.AllKeys){#>
+    public static string <#=CleanPropertyName(setting)#> { get { return GetConfigSettingItem("<#=setting#>"); } }
+    <#}#>
+
         private const string MISSING_CONFIG = "Invalid configuration. Required AppSettings section is missing";
         private const string INVALID_CONFIG_SETTING = "Invalid configuration setting name: {0}";
 
