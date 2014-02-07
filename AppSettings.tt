@@ -34,9 +34,6 @@ namespace <#=namespaceName#>
                     throw new ConfigurationErrorsException(SettingItemErrorMessage(name, exception));
                 }
             }
-            // Older versions of the NETFx doesn't have IsNullOrWhiteSpace
-            if (string.IsNullOrEmpty(value))
-                throw new ConfigurationErrorsException(SettingItemErrorMessage(name));
             return value;
         }
         

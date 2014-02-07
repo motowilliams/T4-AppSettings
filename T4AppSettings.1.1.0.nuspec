@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+    <metadata>
+        <id>T4AppSettings</id>
+        <version>1.1.0</version>
+        <title>T4 AppSettings</title>
+        <authors>Eric Williams</authors>
+        <owners>Eric Williams</owners>
+        <licenseUrl>https://raw.github.com/motowilliams/T4-AppSettings/master/LICENSE.txt</licenseUrl>
+        <projectUrl>https://github.com/motowilliams/T4-AppSettings</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>This T4 template was based on the orginal work of J Wynia from his blog post at http://wynia.org/wordpress/2010/04/t4-template-for-appsettings-access-in-config-files</description>
+        <summary>A T4 template that will build a Configuration Manager static wrapper class around a app.config or web.config</summary>
+        <releaseNotes>Removed throwing on empty key values</releaseNotes>
+        <language>en-US</language>
+        <tags>t4 appsettings app.config web.config</tags>
+        <frameworkAssemblies>
+            <frameworkAssembly assemblyName="System.Configuration" targetFramework=".NETFramework3.5" />
+            <frameworkAssembly assemblyName="System.Configuration" targetFramework=".NETFramework4.0" />
+        </frameworkAssemblies>
+    </metadata>
+    <files>
+        <file src="content\AppSettings.tt" target="content\AppSettings.tt" />
+    </files>
+</package>
