@@ -72,7 +72,7 @@ namespace <#=namespaceName#>
     
     private string CleanPropertyName(string name)
     {
-        var regex = new System.Text.RegularExpressions.Regex(@"\! | \@ | \# | \$ | \% | \^ | \& | \* | \( | \) | \+ | \= | \< | \> | \, | \.  | \/ | \\ | \? | \| | \{ | \} | \[ | \] | \: | \; | \' | \"" | \` | \~", System.Text.RegularExpressions.RegexOptions.IgnorePatternWhitespace);
+        var regex = new System.Text.RegularExpressions.Regex(@"\! | \@ | \# | \$ | \% | \^ | \& | \* | \( | \) | \+ | \= | \< | \> | \, | \.  | \/ | \\ | \? | \| | \{ | \} | \[ | \] | \: | \; | \' | \"" | \` | \~ | - ", System.Text.RegularExpressions.RegexOptions.IgnorePatternWhitespace);
         return regex.Replace(name, "_");
     }
 
