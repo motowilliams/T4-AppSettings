@@ -36,7 +36,7 @@ namespace <#=namespaceName#>
             }
             return value;
         }
-        
+
         private static string SettingItemErrorMessage(string name)
         {
             return string.Format(INVALID_CONFIG_SETTING, name);
@@ -69,7 +69,7 @@ namespace <#=namespaceName#>
 
         return project;
     }
-    
+
     private string CleanPropertyName(string name)
     {
         var regex = new System.Text.RegularExpressions.Regex(@"\! | \@ | \# | \$ | \% | \^ | \& | \* | \( | \) | \+ | \= | \< | \> | \, | \.  | \/ | \\ | \? | \| | \{ | \} | \[ | \] | \: | \; | \' | \"" | \` | \~ | - ", System.Text.RegularExpressions.RegexOptions.IgnorePatternWhitespace);
@@ -82,7 +82,7 @@ namespace <#=namespaceName#>
         System.IO.FileInfo fileInfo = new System.IO.FileInfo(project.FullName);
         return fileInfo.Directory.FullName;
     }
-    
+
     private string GetConfigPath()
     {
         EnvDTE.Project project = GetCurrentProject();
@@ -94,10 +94,10 @@ namespace <#=namespaceName#>
         }
         return string.Empty;
     }
-    
+
     public string GetDataDirectory()
     {
         EnvDTE.Project project = GetCurrentProject();
         return System.IO.Path.GetDirectoryName(project.FileName)+"\\App_Data\\";
-    }      
+    }
 #>

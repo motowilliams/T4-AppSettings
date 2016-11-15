@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>T4AppSettings</id>
-        <version>1.1.0</version>
+        <version>1.1.2</version>
         <title>T4 AppSettings</title>
         <authors>Eric Williams</authors>
         <owners>Eric Williams</owners>
@@ -20,6 +20,6 @@
         </frameworkAssemblies>
     </metadata>
     <files>
-        <file src="content\AppSettings.tt" target="content\AppSettings.tt" />
+        <file src="AppSettings.tt" target="content\AppSettings.tt" />
     </files>
 </package>
